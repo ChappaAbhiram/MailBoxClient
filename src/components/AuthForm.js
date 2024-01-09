@@ -1,21 +1,35 @@
 import { useState, useRef } from 'react';
+
 import  "./AuthForm.css"
+import { useNavigate } from 'react-router-dom';
 const AuthForm = () => {
+    const history = useNavigate();
     const emailInputRef = useRef();
   const passwordInputRef = useRef();
   const confirmPasswordRef = useRef();
-//   const [isLoading,setIsLoading] = useState(false);
+  const [isLoading,setIsLoading] = useState(false);
+  const [isSignIn,setSignIn] = useState(false);
+  const [forgotPassword,setForgotPassword] = useState(false);
 
   const submitHandler = (event)=>{
     event.preventDefault();
     const enteredEmail = emailInputRef.current.value;
     const enteredPassword = passwordInputRef.current.value;
-    const confirmPassword = confirmPasswordRef.current.value;
+    let confirmPassword ;
+    if(!isSignIn){
+    confirmPassword = confirmPasswordRef.current.value;
+    }
+    
     let url;
+    if(isSignIn){
+        url = "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyBa1t8g-1UL2YeO6OIh4jJAydUnoaNH_fs";
+    }
+    else{
     url = "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyBa1t8g-1UL2YeO6OIh4jJAydUnoaNH_fs";
-    if(enteredPassword!==confirmPassword){
+    }
+    if(!isSignIn && enteredPassword!==confirmPassword){
         alert("Passwords missmatch");
-        // setIsLoading(false);
+        setIsLoading(false);
         return;
       }
     fetch(url,
@@ -31,7 +45,7 @@ const AuthForm = () => {
           }
         }
         ).then(res=>{
-        //   setIsLoading(false);
+          setIsLoading(false);
           if(res.ok){
             return res.json();
       }
@@ -46,29 +60,72 @@ const AuthForm = () => {
            });
           }
         }).then(data =>{
-            console.log("User Successfully Signed up");
-            alert("User Successfully Signed up");
+            // console.log("User Successfully Signed up");
+            // alert("User Successfully Signed up");
+            console.log(data);
+            setIsLoading(false);
+            history('/homepage');
   })
   .catch(err=>{
     alert(err.message);
   });
 }
+const forgotpasswordHandler = (e)=>{
+    e.preventDefault();
+    setForgotPassword(true);
+    // dispatch(authActions.switchmode())
+   }
+
+   const sendLinkHandler = (e)=>{
+    e.preventDefault();
+    setIsLoading(true);
+    fetch("https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=AIzaSyBa1t8g-1UL2YeO6OIh4jJAydUnoaNH_fs",{
+      method : "POST",
+      headers : {
+        "Content-Type" : "application/json"
+      },
+      body : JSON.stringify({
+        email : emailInputRef.current.value,
+        requestType : "PASSWORD_RESET"
+      })
+    }).then(res=>{
+      if(res.ok){
+        return res.json();
+      }
+      else{
+        return res.json().then(data=>{
+          if(data && data.error && data.error.message){
+            alert(`${data.error.message}`)
+          }
+        })
+      }
+    }).then(data=>{
+      console.log(data);
+      setIsLoading(false);
+    })
+   }
+
+   const switchAuthModeHandler = () => {
+    // dispatch(authActions.switchmode());
+    setForgotPassword(false);
+    setSignIn(!isSignIn);
+  };
   return (
     // <section className={classes.auth}>
     <section className = "auth-form">
-      {/* <h1>{isLogin ? 'Login' : !forgotPassword ? 'Sign Up' : ''}</h1> */}
-      <h1>Sign Up</h1>
+      <h1>{isSignIn ? 'Login' : !forgotPassword ? 'Sign Up' : ''}</h1>
+      {/* <h1>Sign Up</h1> */}
       <form onSubmit={submitHandler}>
         {/* <div className={classes.control}> */}
         <div>
-          {/* {!forgotPassword && <label htmlFor='email'>Your Email</label>}
-          {forgotPassword && <label htmlFor='email'>Enter Your Registered email</label>} */}
-          <label htmlFor='email'>Your Email</label>
+          {!forgotPassword && <label htmlFor='email'>Your Email</label>}
+          {forgotPassword && <label htmlFor='email'>Enter Your Registered email</label>}
+          {/* <label htmlFor='email'>Your Email</label> */}
           <input type='email' id='email' required ref={emailInputRef}/>
         </div>
         {/* {!forgotPassword && (<div className={classes.control}> */}
         {/* <div className={classes.control}> */}
-        <div>
+       {!forgotPassword && (<div>
           <label htmlFor='password'>Your Password</label>
           <input
             type='password'
@@ -76,9 +133,9 @@ const AuthForm = () => {
             required
             ref={passwordInputRef}
           />
-        </div>
+        </div>)}
         {/* {!isLogin && !forgotPassword && (<div className={classes.control}> */}
-        <div>
+        {!isSignIn && !forgotPassword && (<div>
           <label htmlFor='confirmpassword'>Confirm Password</label>
           <input
             type='password'
@@ -86,22 +143,35 @@ const AuthForm = () => {
             required
             ref={confirmPasswordRef}
           />
-        </div>
+        </div>)}
 
         {/* <div className={classes.actions}> */}
         <div>
-          {/* {!isLoading && !forgotPassword && <button>{isLogin ? 'Login' : 'Create Account'}</button>}
-          {!isLoading && !forgotPassword && isLogin && <button className={classes.toggle} onClick={forgotpasswordHandler}>'Forgot password'</button>}
-          {!isLoading && forgotPassword && <button onClick = {sendLinkHandler}>Send Link</button>}
-          {isLoading && <p>Sending Request.....</p>} */}
-          <button>Create Account</button>
-          {/* <button
+        {!isLoading && !forgotPassword && (
+          <button className={isSignIn ? 'primary' : 'secondary'}>
+            {isSignIn ? 'Login' : 'Create Account'}
+          </button>
+        )}
+        {!isLoading && !forgotPassword && isSignIn && (
+          <button className="secondary" onClick={forgotpasswordHandler}>
+            'Forgot password'
+          </button>
+        )}
+        {!isLoading && forgotPassword && (
+          <button className="primary" onClick={sendLinkHandler}>
+            Send Link
+          </button>
+        )}
+          {isLoading && <p>Sending Request.....</p>}
+          {/* <button>Create Account</button> */}
+          <button
             type='button'
-            className={classes.toggle}
+            // className={classes.toggle}
+            className = "tertiary"
             onClick={switchAuthModeHandler}
           >
-            {isLogin && !forgotPassword ? 'Create new account' : 'Login with existing account'}
-          </button> */}
+            {isSignIn && !forgotPassword ? 'Create new account' : 'Login with existing account'}
+          </button>
         </div>
       </form>
     </section>

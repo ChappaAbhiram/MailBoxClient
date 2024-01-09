@@ -1,10 +1,17 @@
 import AuthForm from "./components/AuthForm";
+import Homepage from "./components/Homepage";
+import { Route,Routes,BrowserRouter } from "react-router-dom";
 function App() {
   return (
-    <div>
+    <BrowserRouter>
+   
+    <Routes>
       {/* <h2>Let's get started!</h2> */}
-      <AuthForm />
-    </div>
+      <Route path="/" element={<AuthForm />} />
+      <Route path="/homepage" element={<Homepage />}></Route>
+    </Routes>
+    </BrowserRouter>
+   
   );
 }
 
