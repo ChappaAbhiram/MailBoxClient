@@ -1,10 +1,8 @@
 const Homepage = ()=>{
     return(
-        <div>
-        <h1>
+        <p>
             Welcome to mail box client
-        </h1>
-        </div>
+        </p>
     )
 }
 export default Homepage;
