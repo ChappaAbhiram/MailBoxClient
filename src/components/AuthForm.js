@@ -56,6 +56,8 @@ const AuthForm = () => {
       }
 
       setIsLoading(false);
+      localStorage.setItem('token',response.idToken);
+      localStorage.setItem('email',enteredEmail.replace(/[@.]/g,''))
       navigate('/homepage');
     } catch (error) {
       alert(error.message);
