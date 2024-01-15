@@ -30,12 +30,14 @@ const SubjectchangeHandler=(e)=>{
     }
     const submitHandler=(e)=>{
         e.preventDefault();
-        const sender=localStorage.getItem('email');
+        const senderemailunchanged=localStorage.getItem('email');
+        const sender = senderemailunchanged.replace(/[@.]/g,'');
         const receiver=email.replace(/['@','.']/g,'');
-       // console.log(sender,receiver);
-       fetch(`https://mailboxclient-a7c86-default-rtdb.firebaseio.com/${sender}.json`,{
+       console.log(sender,receiver);
+       fetch(`https://mailboxclient-a7c86-default-rtdb.firebaseio.com/sent/${sender}.json`,{
         method:'POST',
         body:JSON.stringify({
+            sentTo : email,
             subject:subject,
             message:editorState.getCurrentContent().getPlainText()
         }),
@@ -49,9 +51,10 @@ const SubjectchangeHandler=(e)=>{
             console.log('successfull');
         }
        })
-       fetch(`https://mailboxclient-a7c86-default-rtdb.firebaseio.com/${receiver}.json`,{
+       fetch(`https://mailboxclient-a7c86-default-rtdb.firebaseio.com/received/${receiver}.json`,{
         method:'POST',
         body:JSON.stringify({
+            from : senderemailunchanged,
             subject:subject,
             message:editorState.getCurrentContent().getPlainText()
         }),

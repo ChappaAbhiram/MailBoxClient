@@ -1,6 +1,8 @@
 import { useState, useRef } from 'react';
 import './AuthForm.css';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { authAction } from './EmailStore/authreducer';
 
 const AuthForm = () => {
   const navigate = useNavigate();
@@ -10,6 +12,7 @@ const AuthForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSignIn, setSignIn] = useState(false);
   const [forgotPassword, setForgotPassword] = useState(false);
+  const dispatch = useDispatch();
 
   const submitHandler = async (event) => {
     event.preventDefault();
@@ -45,20 +48,28 @@ const AuthForm = () => {
           'Content-Type': 'application/json',
         },
       });
+      const data = await response.json();
 
       if (!response.ok) {
-        const data = await response.json();
         let errorMessage = 'Authentication failed!';
         if (data && data.error && data.error.message) {
           errorMessage = data.error.message;
         }
         throw new Error(errorMessage);
       }
-
+else{
+     if(isSignIn){
       setIsLoading(false);
-      localStorage.setItem('token',response.idToken);
-      localStorage.setItem('email',enteredEmail.replace(/[@.]/g,''))
+      localStorage.setItem('token',data.idToken);
+      localStorage.setItem('email',enteredEmail);
+      dispatch(authAction.login());
       navigate('/homepage');
+     }
+     else{
+      alert("User Successfully Signed up");
+      history('/',{replace : true});
+     }
+}
     } catch (error) {
       alert(error.message);
     }
