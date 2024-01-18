@@ -10,7 +10,6 @@ function Inbox() {
   const myEmail = localStorage.getItem('email').replace(/[@.]/g, ''); // Remove single quotes around @ and .
 
   const dispatch = useDispatch();
-  let data = [];
   const [reRender,setreRender]=useState(true)
   const deleteHandler=async(id)=>{
     const response= await fetch(`https://mailboxclient-a7c86-default-rtdb.firebaseio.com/received/${myEmail}/${id}.json`,{
@@ -25,7 +24,7 @@ function Inbox() {
 
     const fetchData=async()=>{
         const reponse=await fetch( `https://mailboxclient-a7c86-default-rtdb.firebaseio.com/received/${myEmail}.json`);
-
+        let data = [];
         const mailData=await reponse.json();
         console.log('useEffectcalled', mailData);
         for(let key in mailData){
@@ -37,10 +36,17 @@ function Inbox() {
     }
 
     fetchData();
-  }, [reRender]); // Empty dependency array to run the effect once
-
-  console.log(data, 'data');
-  console.log(mailInInbox);
+    const intervalID = setInterval(() => {
+        fetchData();
+        console.log("setinterval called")
+      }, 7000);
+  
+      // Clean up the interval when the component is unmounted
+      return () => {
+        clearInterval(intervalID);
+      };
+    }, [reRender]);
+  
 
   return (
     <div className={classes.main}>
