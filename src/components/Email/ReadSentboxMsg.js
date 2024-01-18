@@ -3,9 +3,9 @@ import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import classes from './ReadMsg.module.css';
 
-const ReadMsg = () => {
+const ReadSentboxMsg = () => {
     const {id}=useParams();
-    const mails=useSelector(state=>state.mail.mails)
+    const mails=useSelector(state=>state.mail.sendMails);
     const myEmail=localStorage.getItem('email').replace(/['@','.']/g,'');
 
     const singleMail=mails.filter((item)=>item.id===id);
@@ -14,18 +14,18 @@ const ReadMsg = () => {
     useEffect(() => {
         const fetchData = async () => {
           try {
-            // Fetch the existing data 
-            const existingResponse = await fetch(`https://mailboxclient-a7c86-default-rtdb.firebaseio.com/received/${myEmail}/${id}.json`);
+
+            const existingResponse = await fetch(`https://mailboxclient-a7c86-default-rtdb.firebaseio.com/sent/${myEmail}/${id}.json`);
             const existingData = await existingResponse.json();
       
-            // Updating the dot value to false
+        
             const updatedData = {
               ...existingData,
               dot: false
             };
       
             // PUT request to update the entire resource
-            const response = await fetch(`https://mailboxclient-a7c86-default-rtdb.firebaseio.com/received/${myEmail}/${id}.json`, {
+            const response = await fetch(`https://mailboxclient-a7c86-default-rtdb.firebaseio.com/sent/${myEmail}/${id}.json`, {
               method: 'PUT',
               body: JSON.stringify(updatedData),
               headers: {
@@ -51,4 +51,4 @@ const ReadMsg = () => {
   )
 }
 
-export default ReadMsg;
+export default ReadSentboxMsg;

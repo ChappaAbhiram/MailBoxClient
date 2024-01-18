@@ -3,11 +3,11 @@ import Inbox from "./components/Email/Inbox";
 import SendEmail from "./components/Email/SendEmail";
 import Homepage from "./components/Homepage";
 import SentBox from "./components/Email/SentBox";
-import ReadMsg from "./components/Email/ReadMsg";
+import ReadInboxMsg from "./components/Email/ReadInboxMsg";
 import { useSelector } from "react-redux";
 import { Route,Routes,BrowserRouter } from "react-router-dom";
-
-function App() {
+import ReadSentboxMsg from "./components/Email/ReadSentboxMsg";
+const App = ()=> {
   const isAuth=useSelector(state=>state.auth.isAuthenicate)
   console.log(isAuth);
   return (
@@ -20,7 +20,8 @@ function App() {
       <Route path='/send' element={isAuth ? <SendEmail /> : <AuthForm />} />
       <Route path='/inbox' element={isAuth ? <Inbox /> : <AuthForm />} />
       <Route path='/sentbox' element={isAuth ? <SentBox /> : <AuthForm />} />
-      <Route path='/message/:id' element={isAuth ? <ReadMsg /> : <AuthForm />} /> 
+      <Route path='/inboxmessage/:id' element={isAuth ? <ReadInboxMsg /> : <AuthForm />} /> 
+      <Route path='/sentboxmessage/:id' element={isAuth ? <ReadSentboxMsg /> : <AuthForm />} />
     </Routes>
     </BrowserRouter>
    

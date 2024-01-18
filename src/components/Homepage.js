@@ -42,6 +42,7 @@ const Homepage = ()=>{
 <Button onClick={logoutHandler}>logout</Button> <br></br>
 <Link to='/send'>Compose Email</Link> <br></br>
 <Link to='/inbox'>Inbox {unRead}</Link>
+<Link to='/sentbox'>SentBox</Link>
         </Fragment>
     )
 }

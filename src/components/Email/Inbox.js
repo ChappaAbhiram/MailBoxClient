@@ -3,6 +3,7 @@ import { inboxAction } from '../EmailStore/EmailReducer';
 import { useDispatch, useSelector } from 'react-redux';
 import { NavLink } from 'react-router-dom';
 import classes from './Inbox.module.css';
+import { useState } from 'react';
 
 function Inbox() {
     const mailInInbox = useSelector((state) => state.mail.mails);
@@ -10,7 +11,16 @@ function Inbox() {
 
   const dispatch = useDispatch();
   let data = [];
+  const [reRender,setreRender]=useState(true)
+  const deleteHandler=async(id)=>{
+    const response= await fetch(`https://mailboxclient-a7c86-default-rtdb.firebaseio.com/received/${myEmail}/${id}.json`,{
+        method:'DELETE'
+    })  
+    const deleteData=await response.json();
+    setreRender((prev)=>!prev)
+    console.log(deleteData);
 
+    }
   useEffect(() => {
 
     const fetchData=async()=>{
@@ -27,7 +37,7 @@ function Inbox() {
     }
 
     fetchData();
-  }, []); // Empty dependency array to run the effect once
+  }, [reRender]); // Empty dependency array to run the effect once
 
   console.log(data, 'data');
   console.log(mailInInbox);
@@ -41,11 +51,14 @@ function Inbox() {
                     <div className={classes.user}>From :- {item.from}</div>
             <div className={classes.subject}>{item.subject}</div>
             <div className={classes.msg}>
-                <NavLink to={`/message/${item.id}`} style={{textDecoration:'none'}}>{'{message}'}</NavLink>
+                <NavLink to={`/inboxmessage/${item.id}`} style={{textDecoration:'none'}}>{'{message}'}</NavLink>
             </div>
            {item.dot && <div className={classes.dot}>
             {/* //dot logic */}
             </div>}
+            <div className={classes.delete}>
+                <button onClick={()=>{deleteHandler(item.id)}}>Delete</button>
+            </div>
             </div>
                 ))
 
