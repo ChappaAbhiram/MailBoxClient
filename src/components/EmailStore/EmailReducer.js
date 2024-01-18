@@ -1,7 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialInboxState = {
-    mails: []
+    mails: [],
+    unRead : 0
 }
 
 const inboxSlice = createSlice({
@@ -10,6 +11,9 @@ const inboxSlice = createSlice({
     reducers:{
 updateInbox(state,action){
     state.mails = action.payload
+},
+updateUnread(state,action){
+    state.unRead=action.payload
 }
     }
 })

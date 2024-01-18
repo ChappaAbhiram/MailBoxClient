@@ -34,4 +34,11 @@
 .msg{
     text-align: right;
 }
+.dot{
+    width: 8px;
+    height: 8px;
+    background: blue;
+    border-radius: 100%;
+    margin-left: 10px;
+}
 

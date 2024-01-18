@@ -56,7 +56,8 @@ const SubjectchangeHandler=(e)=>{
         body:JSON.stringify({
             from : senderemailunchanged,
             subject:subject,
-            message:editorState.getCurrentContent().getPlainText()
+            message:editorState.getCurrentContent().getPlainText(),
+            dot:true
         }),
         headers:{
             'Content-Type':'application/json'
